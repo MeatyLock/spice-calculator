@@ -31,6 +31,14 @@ body {
     overflow-x: hidden;
 }
 
+/* Layout: container + right-side group results */
+.page-layout {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;           /* align tops; control offset via margin */
+    gap: 24px;
+}
+
 /* Grid removed per request */
 
 /* Soft scanlines for a HUD vibe */
@@ -90,15 +98,15 @@ h1 {
     vertical-align: middle;
     background: var(--neon);
     margin-left: 2px;
-    animation: blink-cursor 1s steps(1) infinite;
     border-radius: 2px;
     box-shadow: 0 0 10px rgba(0, 231, 255, 0.65);
+    opacity: 1; /* default visible */
 }
 
-@keyframes blink-cursor {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0; }
-}
+/* Synchronize all cursor flashes via a single body class */
+body.cursor-off .input-cursor { opacity: 0; }
+
+/* legacy keyframes no longer used */
 /* Hide number input spinners (Chrome, Safari, Edge) */
 input[type=number]::-webkit-inner-spin-button, 
 input[type=number]::-webkit-outer-spin-button {
@@ -156,7 +164,7 @@ input[type=number] {
     transform: translateX(22px);
     background: linear-gradient(90deg, var(--magenta), var(--neon));
 }
-#discount-label, #mode-label {
+#discount-label, #mode-label, #group-mode-label {
     color: var(--amber);
     font-size: 1.05rem; /* use rem to avoid parent em scaling */
     letter-spacing: 1px;
@@ -165,9 +173,45 @@ input[type=number] {
     height: 30px; /* match .switch height */
     line-height: 30px;
 }
+
+/* Group panel layout: single column list */
+#group-results {
+    display: flex;
+    flex-direction: column;            /* one column, all groups stacked */
+    gap: 12px;                         /* vertical spacing between groups */
+}
+
+/* Group card with vertical lines */
+#group-results .group-card { font-size: 0.98em; }
+#group-results .group-card .name { font-weight: 700; margin-bottom: 2px; }
+#group-results .group-card .line { opacity: 0.95; }
+#group-results .group-card .label { color: var(--amber); }
+
+/* Thin divider between groups, matching container border tone */
+#group-results .group-card {
+    padding-bottom: 8px;
+}
+#group-results .group-card::after {
+    content: "";
+    display: block;
+    width: 50%;                  /* half-length divider */
+    height: 1px;
+    background: rgba(0, 231, 255, 0.6);
+    margin-top: 8px;
+}
+#group-results .group-card:last-child {
+    padding-bottom: 0;
+}
+#group-results .group-card:last-child::after {
+    content: none;
+}
+
+@media (max-width: 520px) {
+    /* nothing special needed for each line in narrow view */
+}
 .container {
     max-width: 560px;
-    margin: 42px auto;
+    margin: 42px 0;
     padding: 34px 28px;
     position: relative;
     /* Solid, high-contrast fill for maximum readability */
@@ -206,7 +250,8 @@ label {
     opacity: 0.9;
 }
 
-input[type="number"] {
+input[type="number"],
+input[type="text"] {
     width: 18ch;
     min-width: 10ch;
     max-width: 100%;
@@ -225,12 +270,19 @@ input[type="number"] {
     transition: border-color 0.2s, box-shadow 0.2s, background 0.3s;
 }
 
-input[type="number"]:focus {
+input[type="number"]:focus,
+input[type="text"]:focus {
     outline: none;
     border-color: var(--neon);
     box-shadow:
       0 0 0 2px rgba(0, 231, 255, 0.12) inset,
       0 0 20px rgba(0, 231, 255, 0.35);
+}
+
+/* Narrow width for group size inputs (two digits) */
+input.group-size {
+    width: 6ch;
+    min-width: 0;
 }
 
 button {
@@ -274,7 +326,7 @@ h2 {
 }
 
 .digital {
-    font-family: 'Share Tech Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
     font-variant-numeric: tabular-nums;
     color: var(--neon);
     font-weight: 700;
@@ -289,3 +341,46 @@ h2 {
     opacity: 0.9;
     text-shadow: 0 0 10px rgba(230, 196, 122, 0.35);
 }
+/* Group results attached to the right of container */
+#group-results {
+    position: static;
+    width: 360px;
+    max-height: calc(100vh - 90px);
+    overflow: auto;
+    padding: 4px 0;
+    z-index: 1;
+    margin-top: 50px; /* start just below container top (+42px) */
+}
+
+/* Stack on small screens */
+@media (max-width: 980px) {
+    .page-layout { flex-direction: column; align-items: stretch; gap: 8px; }
+    #group-results {
+        position: static;
+        width: auto;
+        margin: 0 16px 24px;
+        max-height: none;
+    }
+}
+
+/* Group input rows (name + size) */
+.group-input-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px 16px;
+    align-items: end;
+}
+.group-input-row label { grid-column: 1 / -1; }
+
+/* Copy button styling */
+.group-copy-btn {
+    margin-left: 8px;
+    background: linear-gradient(90deg, var(--neon), var(--magenta));
+    color: #021014;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+.group-copy-btn:hover { filter: brightness(1.08); }

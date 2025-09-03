@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div class="page-layout">
     <div class="container">
         <h1><span class="glow">Spice Melange</span> Calculator</h1>
 
@@ -25,11 +26,30 @@
             <input type="number" id="main-input" value="" min="0" placeholder="Enter spice sand..." style="padding-right:1.5ch;">
             <span class="input-cursor" id="cursor-main"></span>
         </div>
+        
+        <div class="toggle-wrapper">
+            <label class="switch">
+                <input type="checkbox" id="group-mode-toggle">
+                <span class="slider"></span>
+            </label>
+            <span id="group-mode-label">Participants Mode</span>
+        </div>
 
-        <label for="participants">Number of Participants:</label>
-        <div style="position:relative;display:inline-block;width:fit-content;">
-            <input type="number" id="participants" value="" min="1" placeholder="Enter participants..." style="padding-right:1.5ch;">
-            <span class="input-cursor" id="cursor-participants"></span>
+        <div id="participants-section">
+            <label for="participants">Number of Participants:</label>
+            <div style="position:relative;display:inline-block;width:fit-content;">
+                <input type="number" id="participants" value="" min="1" placeholder="Enter participants..." style="padding-right:1.5ch;">
+                <span class="input-cursor" id="cursor-participants"></span>
+            </div>
+        </div>
+
+        <div id="groups-section" style="display:none;">
+            <label for="num-groups">Number of Groups (max 10):</label>
+            <div style="position:relative;display:inline-block;width:fit-content;">
+                <input type="number" id="num-groups" value="" min="1" max="10" placeholder="Enter groups..." style="padding-right:1.5ch;">
+                <span class="input-cursor" id="cursor-num-groups"></span>
+            </div>
+            <div id="group-size-list"></div>
         </div>
         <div class="toggle-wrapper">
             <label class="switch">
@@ -40,14 +60,18 @@
         </div>
 
         <h2>Totals</h2>
-        <div class="results">
+        <div id="single-results" class="results">
             <p class="result">Spice Sand: <span class="digital" id="spice-sand">0</span></p>
             <p class="result">Melange: <span class="digital" id="melange">0</span></p>
             <p class="result">Residue: <span class="digital" id="residue">0</span></p>
         </div>
     </div>
+
+    <!-- Group totals displayed outside the container on the right -->
+    <div id="group-results" class="results" style="display:none;"></div>
+    </div>
     <div class="credit">Brought to you by the guild Oblivion on Kadrish</div>
     
-    <script src="app.js"></script>
+    <script src="app.js?v=5"></script>
 </body>
 </html>

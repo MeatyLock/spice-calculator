@@ -11,8 +11,81 @@ const modeToggle = document.getElementById('mode-toggle');
 const modeLabel = document.getElementById('mode-label');
 const mainInput = document.getElementById('main-input');
 const mainInputLabel = document.getElementById('main-input-label');
+const groupModeToggle = document.getElementById('group-mode-toggle');
+const groupModeLabel = document.getElementById('group-mode-label');
+const participantsSection = document.getElementById('participants-section');
+const groupsSection = document.getElementById('groups-section');
+const participantsInput = document.getElementById('participants');
+const numGroupsInput = document.getElementById('num-groups');
+const groupSizeList = document.getElementById('group-size-list');
+const singleResults = document.getElementById('single-results');
+const groupResults = document.getElementById('group-results');
 
 let isVolumeMode = false;
+let isGroupMode = false;
+let groupSizeInputs = [];
+let groupNameInputs = [];
+let cursorBlinkTimer = null;
+
+function startCursorBlink() {
+    if (cursorBlinkTimer) return;
+    cursorBlinkTimer = setInterval(() => {
+        document.body.classList.toggle('cursor-off');
+    }, 500);
+}
+
+function renderGroupInputs() {
+    let n = Math.max(1, parseInt(numGroupsInput.value) || 0);
+    if (n > 10) n = 10;
+    if (String(n) !== numGroupsInput.value) numGroupsInput.value = String(n);
+    // Rebuild the inputs list each time
+    groupSizeList.innerHTML = '';
+    groupSizeInputs = [];
+    groupNameInputs = [];
+    for (let i = 1; i <= n; i++) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'group-input-row';
+
+        const label = document.createElement('label');
+        label.textContent = `Group ${i}`;
+
+        // Name input
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.placeholder = 'Group name (optional)';
+        nameInput.id = `group-name-${i}`;
+        nameInput.addEventListener('input', debounceCalculate);
+
+        // Size input
+        const sizeContainer = document.createElement('div');
+        sizeContainer.style.position = 'relative';
+        sizeContainer.style.display = 'inline-block';
+        sizeContainer.style.width = 'fit-content';
+        const sizeInput = document.createElement('input');
+        sizeInput.type = 'number';
+        sizeInput.min = '1';
+        sizeInput.max = '99';
+        sizeInput.placeholder = 'Size';
+        sizeInput.id = `group-size-${i}`;
+        sizeInput.classList.add('group-size');
+        sizeInput.style.paddingRight = '1.5ch';
+        sizeInput.value = '';
+        sizeContainer.appendChild(sizeInput);
+        const sizeCursor = document.createElement('span');
+        sizeCursor.className = 'input-cursor';
+        sizeCursor.id = `cursor-group-size-${i}`;
+        sizeContainer.appendChild(sizeCursor);
+
+        wrapper.appendChild(label);
+        // Place size input to the left of name
+        wrapper.appendChild(sizeContainer);
+        wrapper.appendChild(nameInput);
+        groupSizeList.appendChild(wrapper);
+        groupSizeInputs.push(sizeInput);
+        groupNameInputs.push(nameInput);
+        sizeInput.addEventListener('input', debounceCalculate);
+    }
+}
 
 function updateModeUI() {
     isVolumeMode = modeToggle.checked;
@@ -39,7 +112,7 @@ discountToggle.addEventListener('change', function() {
 });
 
 function calculateResources() {
-    const participants = parseInt(document.getElementById('participants').value) || 1;
+    const participants = parseInt(participantsInput.value) || 1;
     let totalSpiceSand = 0;
     if (isVolumeMode) {
         const volume = parseFloat(mainInput.value) || 0;
@@ -64,14 +137,68 @@ function calculateResources() {
     const totalMelange = (totalSpiceSand / sandPerCraft) * melangePerCraft;
     const totalResidue = (totalSpiceSand / sandPerCraft) * residuePerCraft;
 
-    // Divide totals by participants if needed
-    const spiceSandDisplay = (totalSpiceSand / participants).toFixed(2);
-    const melangeDisplay = (totalMelange / participants).toFixed(2);
-    const residueDisplay = (totalResidue / participants).toFixed(2);
+    // Handle participants vs groups display
+    if (!isGroupMode) {
+        const spiceSandDisplay = (totalSpiceSand / participants).toFixed(2);
+        const melangeDisplay = (totalMelange / participants).toFixed(2);
+        const residueDisplay = (totalResidue / participants).toFixed(2);
 
-    document.getElementById('spice-sand').innerText = spiceSandDisplay;
-    document.getElementById('melange').innerText = melangeDisplay;
-    document.getElementById('residue').innerText = residueDisplay;
+        document.getElementById('spice-sand').innerText = spiceSandDisplay;
+        document.getElementById('melange').innerText = melangeDisplay;
+        document.getElementById('residue').innerText = residueDisplay;
+
+        // Ensure the heading reflects normal totals context
+        const totalsHeading = document.querySelector('.container h2');
+        if (totalsHeading) totalsHeading.textContent = 'Totals';
+        singleResults.style.display = '';
+        groupResults.style.display = 'none';
+        groupResults.innerHTML = '';
+    } else {
+        const numGroups = Math.min(10, Math.max(1, parseInt(numGroupsInput.value) || 0));
+        const sizes = [];
+        const names = [];
+        for (let i = 0; i < numGroups; i++) {
+            const v = groupSizeInputs[i] ? parseInt(groupSizeInputs[i].value) : NaN;
+            sizes.push(Math.max(1, isNaN(v) ? 0 : v));
+            const name = (groupNameInputs[i] && groupNameInputs[i].value || '').trim();
+            names.push(name || `Group ${i + 1}`);
+        }
+        const totalParticipants = Math.max(1, sizes.reduce((a, b) => a + b, 0));
+
+        // Compute and render list of groups with proportional totals
+        const gSpice = [], gMelange = [], gResidue = [], pSpice = [], pMelange = [], pResidue = [];
+        groupResults.innerHTML = '';
+        for (let i = 0; i < numGroups; i++) {
+            const share = sizes[i] / totalParticipants;
+            const spiceSandPerGroup = (totalSpiceSand * share).toFixed(2);
+            const melangePerGroup = (totalMelange * share).toFixed(2);
+            const residuePerGroup = (totalResidue * share).toFixed(2);
+            const spicePerPerson = (parseFloat(spiceSandPerGroup) / sizes[i]).toFixed(2);
+            const melangePerPerson = (parseFloat(melangePerGroup) / sizes[i]).toFixed(2);
+            const residuePerPerson = (parseFloat(residuePerGroup) / sizes[i]).toFixed(2);
+            gSpice[i] = spiceSandPerGroup; gMelange[i] = melangePerGroup; gResidue[i] = residuePerGroup;
+            pSpice[i] = spicePerPerson; pMelange[i] = melangePerPerson; pResidue[i] = residuePerPerson;
+            const row = document.createElement('div');
+            row.className = 'group-card';
+            row.innerHTML = `
+                <div class="name">${names[i]} (size ${sizes[i]})</div>
+                <div class="line"><span class="label">Total Sand</span> | <span class="digital">${spiceSandPerGroup}</span></div>
+                <div class="line"><span class="label">Total Melange</span> | <span class="digital">${melangePerGroup}</span></div>
+                <div class="line"><span class="label">Total Residue</span> | <span class="digital">${residuePerGroup}</span></div>`;
+            groupResults.appendChild(row);
+        }
+        // Show per-person totals once in the main totals box
+        const totalsHeading = document.querySelector('.container h2');
+        if (totalsHeading) totalsHeading.textContent = 'Per Person Totals';
+        const perPersonSpice = (totalSpiceSand / totalParticipants).toFixed(2);
+        const perPersonMelange = (totalMelange / totalParticipants).toFixed(2);
+        const perPersonResidue = (totalResidue / totalParticipants).toFixed(2);
+        document.getElementById('spice-sand').innerText = perPersonSpice;
+        document.getElementById('melange').innerText = perPersonMelange;
+        document.getElementById('residue').innerText = perPersonResidue;
+        singleResults.style.display = '';
+        groupResults.style.display = '';
+    }
 }
 
 // Debounce logic for live update
@@ -82,7 +209,35 @@ function debounceCalculate() {
 }
 
 mainInput.addEventListener('input', debounceCalculate);
-document.getElementById('participants').addEventListener('input', debounceCalculate);
+participantsInput.addEventListener('input', debounceCalculate);
+if (numGroupsInput) numGroupsInput.addEventListener('input', () => { renderGroupInputs(); debounceCalculate(); });
 
 // Initialize UI
 updateModeUI();
+startCursorBlink();
+
+// Group mode toggle behavior
+function updateGroupModeUI() {
+    isGroupMode = groupModeToggle.checked;
+    groupModeLabel.textContent = isGroupMode ? 'Groups Mode' : 'Participants Mode';
+    participantsSection.style.display = isGroupMode ? 'none' : '';
+    groupsSection.style.display = isGroupMode ? '' : 'none';
+    if (isGroupMode) { renderGroupInputs(); }
+    debounceCalculate();
+}
+
+function copyToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text);
+    } else {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(ta);
+    }
+}
+
+groupModeToggle.addEventListener('change', updateGroupModeUI);
+updateGroupModeUI();
