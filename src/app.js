@@ -3,6 +3,8 @@ const SPICE_SAND_PER_CRAFT = 10000; // 10,000 spice sand per craft
 const MELANGE_PER_CRAFT = 200;      // 200 melange per craft
 const RESIDUE_PER_CRAFT = 1000;     // 1,000 residue per craft
 
+const VOLUME_PER_SPICE_SAND = 0.15; // 1 spice sand = 0.15 volume
+
 let discountActive = false;
 const discountToggle = document.getElementById('discount-toggle');
 const discountLabel = document.getElementById('discount-label');
@@ -51,5 +53,22 @@ function debounceCalculate() {
     debounceTimer = setTimeout(calculateResources, 500);
 }
 
-document.getElementById('spice-sand-input').addEventListener('input', debounceCalculate);
+
+const spiceSandInput = document.getElementById('spice-sand-input');
+const volumeInput = document.getElementById('volume-input');
+
+function syncFromSand() {
+    const sand = parseFloat(spiceSandInput.value) || 0;
+    volumeInput.value = sand ? (sand * VOLUME_PER_SPICE_SAND).toFixed(2) : '';
+    debounceCalculate();
+}
+
+function syncFromVolume() {
+    const volume = parseFloat(volumeInput.value) || 0;
+    spiceSandInput.value = volume ? Math.round(volume / VOLUME_PER_SPICE_SAND) : '';
+    debounceCalculate();
+}
+
+spiceSandInput.addEventListener('input', syncFromSand);
+volumeInput.addEventListener('input', syncFromVolume);
 document.getElementById('participants').addEventListener('input', debounceCalculate);
