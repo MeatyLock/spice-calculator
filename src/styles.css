@@ -1,0 +1,167 @@
+/* Hide number input spinners (Chrome, Safari, Edge) */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+/* Hide number input spinners (Firefox) */
+input[type=number] {
+    -moz-appearance: textfield;
+}
+/* Toggle Switch Styles */
+.toggle-wrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 18px;
+}
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 54px;
+    height: 28px;
+    margin-right: 12px;
+}
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #23202b;
+    border: 2px solid #bfa14a;
+    border-radius: 28px;
+    transition: .4s;
+    box-shadow: 0 0 8px #bfa14a33;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background: linear-gradient(90deg, #bfa14a 0%, #e6c47a 100%);
+    border-radius: 50%;
+    transition: .4s;
+    box-shadow: 0 0 8px #e6c47a99;
+}
+.switch input:checked + .slider {
+    background: #bfa14a;
+    border-color: #e6c47a;
+}
+.switch input:checked + .slider:before {
+    transform: translateX(26px);
+    background: linear-gradient(90deg, #e6c47a 0%, #bfa14a 100%);
+}
+#discount-label {
+    color: #e6c47a;
+    font-size: 1.1em;
+    letter-spacing: 1px;
+    font-family: 'Orbitron', 'Segoe UI', Arial, sans-serif;
+}
+body {
+    font-family: 'Orbitron', 'Segoe UI', Arial, sans-serif;
+    background: radial-gradient(ellipse at top left, #1a1a1f 60%, #2d1e2f 100%);
+    color: #e6c47a;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+h1 {
+    color: #e6c47a;
+    text-shadow: 0 0 12px #bfa14a, 0 0 24px #1a1a1f;
+    font-family: 'Orbitron', 'Segoe UI', Arial, sans-serif;
+    letter-spacing: 2px;
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+.container {
+    max-width: 420px;
+    margin: 40px auto;
+    background: rgba(30, 24, 38, 0.95);
+    padding: 32px 28px;
+    border-radius: 18px;
+    box-shadow: 0 0 32px 8px #bfa14a44, 0 0 0 2px #e6c47a33;
+    border: 1px solid #bfa14a;
+}
+
+label {
+    font-size: 1.1em;
+    color: #e6c47a;
+    margin-top: 12px;
+    display: block;
+    letter-spacing: 1px;
+}
+
+input[type="number"] {
+    width: 18ch;
+    min-width: 10ch;
+    max-width: 100%;
+    padding: 12px;
+    margin: 10px 0 18px 0;
+    border: 1px solid #bfa14a;
+    border-radius: 6px;
+    background: #23202b;
+    color: #e6c47a;
+    font-size: 1.1em;
+    box-shadow: 0 0 8px #bfa14a33 inset;
+    transition: border-color 0.2s;
+}
+
+input[type="number"]:focus {
+    border-color: #e6c47a;
+    outline: none;
+}
+
+button {
+    background: linear-gradient(90deg, #bfa14a 0%, #e6c47a 100%);
+    color: #23202b;
+    padding: 12px 0;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-family: 'Orbitron', 'Segoe UI', Arial, sans-serif;
+    font-weight: bold;
+    box-shadow: 0 0 12px #bfa14a66;
+    margin-top: 8px;
+    transition: background 0.2s, color 0.2s;
+}
+
+button:hover {
+    background: linear-gradient(90deg, #e6c47a 0%, #bfa14a 100%);
+    color: #1a1a1f;
+}
+
+h2 {
+    color: #e6c47a;
+    margin-top: 28px;
+    text-shadow: 0 0 8px #bfa14a;
+    font-size: 1.3em;
+}
+
+.results, .result {
+    margin-top: 18px;
+}
+
+.result, p {
+    background: rgba(36, 28, 44, 0.85);
+    border-left: 5px solid #e6c47a;
+    margin: 10px 0;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 1.15em;
+    color: #e6c47a;
+    box-shadow: 0 0 8px #bfa14a33;
+    letter-spacing: 1px;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');

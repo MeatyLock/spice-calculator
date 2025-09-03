@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spice Melange Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Spice Melange Calculator</h1>
+        <label for="spice-sand-input">Total Spice Sand:</label>
+        <input type="number" id="spice-sand-input" value="10000" min="0">
+
+        <label for="participants">Number of Participants:</label>
+        <input type="number" id="participants" value="1" min="1">
+
+        <div class="toggle-wrapper">
+            <label class="switch">
+                <input type="checkbox" id="discount-toggle">
+                <span class="slider"></span>
+            </label>
+            <span id="discount-label">Apply 25% Discount</span>
+        </div>
+
+        <h2>Totals</h2>
+        <div class="results">
+            <p class="result">Spice Sand: <span id="spice-sand">0</span></p>
+            <p class="result">Melange: <span id="melange">0</span></p>
+            <p class="result">Residue: <span id="residue">0</span></p>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
