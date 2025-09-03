@@ -81,6 +81,13 @@ function renderGroupInputs() {
         groupNameInputs.push(nameInput);
         sizeInput.addEventListener('input', debounceCalculate);
     }
+    // Animate rows building in, staggered by index
+    Array.from(groupSizeList.children).forEach((row, idx) => {
+        row.classList.add('build-in');
+        row.style.animationDelay = `${idx * 60}ms`;
+        const drop = Math.min(36, 8 + idx * 4); // slightly larger drop for later rows
+        row.style.setProperty('--row-drop', `${drop}px`);
+    });
 }
 
 function updateModeUI() {
@@ -147,7 +154,6 @@ function calculateResources() {
         const totalsHeading = document.querySelector('.container h2');
         if (totalsHeading) totalsHeading.textContent = 'Totals';
         singleResults.style.display = '';
-        groupResults.style.display = 'none';
         groupResults.innerHTML = '';
     } else {
         const numGroups = Math.min(10, Math.max(1, parseInt(numGroupsInput.value) || 0));
@@ -183,6 +189,16 @@ function calculateResources() {
                 <div class="line"><span class="label">Total Residue</span> | <span class="digital">${residuePerGroup}</span></div>`;
             groupResults.appendChild(row);
         }
+        // Staggered build-in animation for group cards
+        Array.from(groupResults.children).forEach((el, idx) => {
+            // Set a vertical drop distance based on this group's size
+            const sz = sizes[idx] || 1;
+            const drop = Math.min(64, Math.max(8, sz * 2)); // 2px per member, clamped 8–64px
+            el.style.setProperty('--drop', `${drop}px`);
+            // Staggered reveal
+            el.classList.add('build-in');
+            el.style.animationDelay = `${idx * 70}ms`;
+        });
         // Show per-person totals once in the main totals box
         const totalsHeading = document.querySelector('.container h2');
         if (totalsHeading) totalsHeading.textContent = 'Per Person Totals';
@@ -193,7 +209,6 @@ function calculateResources() {
         document.getElementById('melange').innerText = perPersonMelange;
         document.getElementById('residue').innerText = perPersonResidue;
         singleResults.style.display = '';
-        groupResults.style.display = '';
     }
 }
 
@@ -218,7 +233,8 @@ function updateGroupModeUI() {
     groupModeLabel.textContent = isGroupMode ? 'Groups Mode' : 'Participants Mode';
     participantsSection.style.display = isGroupMode ? 'none' : '';
     groupsSection.style.display = isGroupMode ? '' : 'none';
-    if (isGroupMode) { renderGroupInputs(); }
+    if (isGroupMode) { renderGroupInputs(); document.body.classList.add('groups-active'); }
+    else { document.body.classList.remove('groups-active'); }
     debounceCalculate();
 }
 
