@@ -41,7 +41,7 @@ input[type=number] {
 .switch {
     position: relative;
     display: inline-block;
-    width: 54px;
+    width: 48px;
     height: 28px;
     margin-right: 12px;
 }
@@ -59,7 +59,7 @@ input[type=number] {
     bottom: 0;
     background: #23202b;
     border: 2px solid #bfa14a;
-    border-radius: 28px;
+    border-radius: 6px;
     transition: .4s;
     box-shadow: 0 0 8px #bfa14a33;
 }
@@ -71,7 +71,7 @@ input[type=number] {
     left: 4px;
     bottom: 4px;
     background: linear-gradient(90deg, #bfa14a 0%, #e6c47a 100%);
-    border-radius: 50%;
+    border-radius: 4px;
     transition: .4s;
     box-shadow: 0 0 8px #e6c47a99;
 }
@@ -80,7 +80,7 @@ input[type=number] {
     border-color: #e6c47a;
 }
 .switch input:checked + .slider:before {
-    transform: translateX(26px);
+    transform: translateX(20px);
     background: linear-gradient(90deg, #e6c47a 0%, #bfa14a 100%);
 }
 #discount-label {

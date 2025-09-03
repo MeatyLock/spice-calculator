@@ -11,10 +11,18 @@
     <div class="container">
         <h1>Spice Melange Calculator</h1>
 
-        <label for="spice-sand-input">Total Spice Sand:</label>
+
+        <div class="toggle-wrapper">
+            <label class="switch">
+                <input type="checkbox" id="mode-toggle">
+                <span class="slider"></span>
+            </label>
+            <span id="mode-label">Spice Sand Mode</span>
+        </div>
+        <label for="main-input" id="main-input-label">Total Spice Sand:</label>
         <div style="position:relative;display:inline-block;width:fit-content;">
-            <input type="number" id="spice-sand-input" value="" min="0" placeholder="Enter spice sand..." style="padding-right:1.5ch;">
-            <span class="input-cursor" id="cursor-sand"></span>
+            <input type="number" id="main-input" value="" min="0" placeholder="Enter spice sand..." style="padding-right:1.5ch;">
+            <span class="input-cursor" id="cursor-main"></span>
         </div>
 
         <label for="participants">Number of Participants:</label>
