@@ -71,10 +71,6 @@ function renderGroupInputs() {
         sizeInput.style.paddingRight = '1.5ch';
         sizeInput.value = '';
         sizeContainer.appendChild(sizeInput);
-        const sizeCursor = document.createElement('span');
-        sizeCursor.className = 'input-cursor';
-        sizeCursor.id = `cursor-group-size-${i}`;
-        sizeContainer.appendChild(sizeCursor);
 
         wrapper.appendChild(label);
         // Place size input to the left of name
