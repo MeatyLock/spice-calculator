@@ -2,8 +2,10 @@
 const SPICE_SAND_PER_CRAFT = 10000; // 10,000 spice sand per craft
 const MELANGE_PER_CRAFT = 200;      // 200 melange per craft
 const RESIDUE_PER_CRAFT = 1000;     // 1,000 residue per craft
-
+const DISCOUNTED_MELANGE_PER_CRAFT = 250; // Discounted melange per craft
+const DISCOUNTED_RESIDUE_PER_CRAFT = 1250; // Discounted residue per craft
 const VOLUME_PER_SPICE_SAND = 0.15; // 1 spice sand = 0.15 volume
+
 
 let discountActive = false;
 const discountToggle = document.getElementById('discount-toggle');
@@ -16,25 +18,22 @@ discountToggle.addEventListener('change', function() {
     calculateResources();
 });
 
+
 function calculateResources() {
-    let totalSpiceSand = parseInt(document.getElementById('spice-sand-input').value) || 0;
+    const sandInput = document.getElementById('spice-sand-input');
+    const volumeInput = document.getElementById('volume-input');
     const participants = parseInt(document.getElementById('participants').value) || 1;
 
-    // Use correct conversion rates based on discount
-    let sandPerCraft, melangePerCraft, residuePerCraft;
-    if (discountActive) {
-        sandPerCraft = SPICE_SAND_PER_CRAFT;
-        melangePerCraft = 250;
-        residuePerCraft = 1250;
-    } else {
-        sandPerCraft = SPICE_SAND_PER_CRAFT;
-        melangePerCraft = MELANGE_PER_CRAFT;
-        residuePerCraft = RESIDUE_PER_CRAFT;
-    }
+    // Always get sand from the sand input (volume input will sync it)
+    let totalSpiceSand = parseFloat(sandInput.value) || 0;
 
-    // Calculate melange and residue proportionally
-    const totalMelange = (totalSpiceSand / sandPerCraft) * melangePerCraft;
-    const totalResidue = (totalSpiceSand / sandPerCraft) * residuePerCraft;
+    // Use correct conversion rates based on discount
+    const melangePerCraft = discountActive ? DISCOUNTED_MELANGE_PER_CRAFT : MELANGE_PER_CRAFT;
+    const residuePerCraft = discountActive ? DISCOUNTED_RESIDUE_PER_CRAFT : RESIDUE_PER_CRAFT;
+
+    // Calculate totals proportionally
+    const totalMelange = (totalSpiceSand / SPICE_SAND_PER_CRAFT) * melangePerCraft;
+    const totalResidue = (totalSpiceSand / SPICE_SAND_PER_CRAFT) * residuePerCraft;
 
     // Divide totals by participants if needed
     const spiceSandDisplay = (totalSpiceSand / participants).toFixed(2);
@@ -54,19 +53,30 @@ function debounceCalculate() {
 }
 
 
+
 const spiceSandInput = document.getElementById('spice-sand-input');
 const volumeInput = document.getElementById('volume-input');
 
+let lastChanged = null;
+
 function syncFromSand() {
+    if (lastChanged === 'sand') return;
+    lastChanged = 'sand';
     const sand = parseFloat(spiceSandInput.value) || 0;
+    // Update volume field
     volumeInput.value = sand ? (sand * VOLUME_PER_SPICE_SAND).toFixed(2) : '';
     debounceCalculate();
+    lastChanged = null;
 }
 
 function syncFromVolume() {
+    if (lastChanged === 'volume') return;
+    lastChanged = 'volume';
     const volume = parseFloat(volumeInput.value) || 0;
+    // Update sand field
     spiceSandInput.value = volume ? Math.round(volume / VOLUME_PER_SPICE_SAND) : '';
     debounceCalculate();
+    lastChanged = null;
 }
 
 spiceSandInput.addEventListener('input', syncFromSand);
