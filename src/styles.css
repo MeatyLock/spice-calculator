@@ -1,3 +1,19 @@
+/* Animated flashing cursor for input fields */
+.input-cursor {
+    display: inline-block;
+    width: 1ch;
+    height: 1.2em;
+    vertical-align: middle;
+    background: #e6c47a;
+    margin-left: 2px;
+    animation: blink-cursor 1s steps(1) infinite;
+    border-radius: 2px;
+}
+
+@keyframes blink-cursor {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
 /* Hide number input spinners (Chrome, Safari, Edge) */
 input[type=number]::-webkit-inner-spin-button, 
 input[type=number]::-webkit-outer-spin-button {
